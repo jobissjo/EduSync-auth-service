@@ -2,6 +2,7 @@
 from pydantic import BaseModel, Field
 
 from app.models.enums import UserRole
+from typing import Optional
 
 
 
@@ -29,3 +30,13 @@ class EmailVerifySchema(BaseModel):
 class EmailVerifyOtpSchema(BaseModel):
     otp: str
     email: str
+
+class BaseUserResponse(BaseModel):
+    first_name: str
+    last_name: Optional[str]
+    email: str
+    role: UserRole
+    is_active: bool
+
+    class Config:
+        from_attributes = True

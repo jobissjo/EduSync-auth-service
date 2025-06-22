@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.logger_config import logger
 from app.utils import render_email_template
-
+from app.services.email_setting_log import EmailSettingLogService
 
 class EmailService:
     @staticmethod
@@ -39,32 +39,43 @@ class EmailService:
         use_admin_email: bool = False,
         db: Optional[AsyncSession] = None,
     ):
+        is_failed_email = False
         email_setting = await EmailService.get_email_setting(db, user, use_admin_email)
         email_body = await render_email_template(template_name, template_data)
+        is_store_failed_email_sending = await EmailSettingLogService.is_store_failed_email_sending(template_name, db)
         if not email_setting:
             user = user.first_name if user else "admin"
+            is_failed_email = True
             logger.error(f"Email setting not found for user")
-            return
-        EMAIL_HOST_NAME = email_setting.host
-        EMAIL_HOST_PORT = email_setting.port
-        EMAIL_HOST_USERNAME = email_setting.email
-        EMAIL_HOST_PASSWORD = email_setting.password
-        message = EmailMessage()
+            
+        if not is_failed_email:
+            EMAIL_HOST_NAME = email_setting.host
+            EMAIL_HOST_PORT = email_setting.port
+            EMAIL_HOST_USERNAME = email_setting.email
+            EMAIL_HOST_PASSWORD = email_setting.password
+            message = EmailMessage()
 
-        message["From"] = EMAIL_HOST_USERNAME
-        message["To"] = recipient
-        message["subject"] = subject
-        message.set_content(email_body, subtype="html")
+            message["From"] = EMAIL_HOST_USERNAME
+            message["To"] = recipient
+            message["subject"] = subject
+            message.set_content(email_body, subtype="html")
 
-        context = ssl.create_default_context()
+            context = ssl.create_default_context()
 
-        await aiosmtplib.send(
-            message,
-            hostname=EMAIL_HOST_NAME,
-            port=EMAIL_HOST_PORT,
-            username=EMAIL_HOST_USERNAME,
-            password=EMAIL_HOST_PASSWORD,
-            start_tls=True,
-            tls_context=context,
-            # For compatibility with older versions of aiosmtplib
-        )
+            try:
+                await aiosmtplib.send(
+                    message,
+                    hostname=EMAIL_HOST_NAME,
+                    port=EMAIL_HOST_PORT,
+                    username=EMAIL_HOST_USERNAME,
+                    password=EMAIL_HOST_PASSWORD,
+                    start_tls=True,
+                    tls_context=context,
+                    # For compatibility with older versions of aiosmtplib
+                )
+            except Exception as e:
+                logger.error(f"Failed to send email: {e}")
+                is_failed_email = True
+
+        if is_store_failed_email_sending and is_failed_email:
+            await EmailSettingLogService.save_failed_email_sending_log(template_name, db)

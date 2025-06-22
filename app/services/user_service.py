@@ -55,8 +55,8 @@ class UserService:
         correct_pwd = await verify_password(user_data.password, existing_user.password)
         if not correct_pwd:
             raise CustomException("Invalid credentials.", 401)
-        access_token = await create_access_token({"user_id": existing_user.id})
-        refresh_token = await create_refresh_token({"user_id": existing_user.id})
+        access_token = await create_access_token({"user_id": existing_user.id, "role": existing_user.role})
+        refresh_token = await create_refresh_token({"user_id": existing_user.id, "role": existing_user.role})
         return {
             "access_token": access_token,
             "refresh_token": refresh_token,

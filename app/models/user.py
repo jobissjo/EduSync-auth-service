@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.models.profile import Profile
+    from app.models.email_log import EmailLog
 
 
 class User(Base):
@@ -41,6 +42,12 @@ class User(Base):
     email_settings: Mapped["EmailSetting"] = relationship(
         "EmailSetting", back_populates="user", cascade="all, delete-orphan"
     )
+    # Emails sent by this user (e.g., admin)
+    sent_email_logs: Mapped[list["EmailLog"]] = relationship("EmailLog", back_populates="send_by", foreign_keys="[EmailLog.send_by_id]")
+
+    # Emails sent to this user
+    email_logs: Mapped[list["EmailLog"]] = relationship("EmailLog", back_populates="user", foreign_keys="[EmailLog.user_id]")
+
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, email={repr(self.email)})>"
