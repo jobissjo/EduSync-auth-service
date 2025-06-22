@@ -1,0 +1,9 @@
+fastapi[standard]
+passlib[bcrypt]
+pyjwt[crypto]
+colorlog
+aiosmtplib
+sqlalchemy
+pydantic-settings
+aiosqlite
+sqladmin
