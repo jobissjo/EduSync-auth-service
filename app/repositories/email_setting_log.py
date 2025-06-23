@@ -24,16 +24,17 @@ class EmailSettingLogRepository:
         return True
 
     @staticmethod
-    async def get_failed_email_sending_logs(db: AsyncSession) -> list[EmailLog]:
-        query = select(EmailLog)
+    async def get_failed_email_sending_logs(user_id, db: AsyncSession) -> list[EmailLog]:
+        query = select(EmailLog).where(EmailLog.user_id == user_id)
         result = await db.execute(query)
         return result.scalars().all()
 
     @staticmethod
     async def get_failed_email_sending_log_by_id(
+        user_id: int,
         log_id: int, db: AsyncSession
     ) -> EmailLog:
-        query = select(EmailLog).where(EmailLog.id == log_id)
+        query = select(EmailLog).where(EmailLog.id == log_id, EmailLog.user_id == user_id)
         result = await db.execute(query)
         return result.scalar_one_or_none()
 

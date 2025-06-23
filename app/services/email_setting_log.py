@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.models.user import User
 from app.repositories import EmailSettingLogRepository
 from app.schemas import EmailLogSchema
 
@@ -21,15 +22,19 @@ class EmailSettingLogService:
         )
 
     @staticmethod
-    async def get_failed_email_sending_logs(db: AsyncSession) -> list[EmailLogSchema]:
-        return await EmailSettingLogRepository.get_failed_email_sending_logs(db)
+    async def get_failed_email_sending_logs(
+        db: AsyncSession, user: User
+    ) -> list[EmailLogSchema]:
+        return await EmailSettingLogRepository.get_failed_email_sending_logs(
+            user.id, db
+        )
 
     @staticmethod
     async def get_failed_email_sending_log_by_id(
-        log_id: int, db: AsyncSession
+        user_id: int, log_id: int, db: AsyncSession
     ) -> EmailLogSchema:
         return await EmailSettingLogRepository.get_failed_email_sending_log_by_id(
-            log_id, db
+            user_id, log_id, db
         )
 
     @staticmethod
