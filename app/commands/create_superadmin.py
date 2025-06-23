@@ -6,6 +6,7 @@ from app.models.enums import UserRole
 from sqlalchemy import select
 from app.core.security import hash_password
 
+
 def run(
     email: str = typer.Option(..., prompt="Enter email"),
     password: str = typer.Option(..., prompt="Enter password"),
@@ -36,6 +37,5 @@ def run(
             session.add(profile)
             await session.commit()
             typer.echo("Super Admin created successfully🔥🔥")
-        
-    asyncio.run(create_user())
 
+    asyncio.run(create_user())

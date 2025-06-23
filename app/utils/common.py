@@ -4,8 +4,6 @@ import string
 import random
 
 
-
-
 class CustomException(Exception):
     def __init__(
         self,
@@ -17,8 +15,8 @@ class CustomException(Exception):
         self.status_code = status_code
         self.data = data
 
-async def generate_otp(length: int = 6) -> str:
 
+async def generate_otp(length: int = 6) -> str:
     digits = string.digits
-    otp = ''.join(random.choice(digits) for _ in range(length))
+    otp = "".join(random.choice(digits) for _ in range(length))
     return otp

@@ -12,10 +12,10 @@ class Settings(BaseSettings):
     ENABLE_ADMIN: bool = False
 
     BASE_DIR: Path = Path(__file__).resolve().parent.parent
-    
+
     DATABASE_URL: Optional[str] = None
 
-    SQLITE_PATH: Path = BASE_DIR /  "db" / "dev.db"
+    SQLITE_PATH: Path = BASE_DIR / "db" / "dev.db"
 
     # SMTP settings
     EMAIL_TYPE: Optional[str] = None
@@ -27,19 +27,18 @@ class Settings(BaseSettings):
 
     def model_post_init(self, __context) -> None:
         if self.ENV == "development":
-            object.__setattr__(self, "DATABASE_URL", f"sqlite+aiosqlite:///{self.SQLITE_PATH}")
+            object.__setattr__(
+                self, "DATABASE_URL", f"sqlite+aiosqlite:///{self.SQLITE_PATH}"
+            )
         elif self.ENV == "production" and not self.DATABASE_URL:
-            raise ValueError("❌ In production mode, DATABASE_URL must be set in the environment.")
-        
-    
-        
-        
-    
+            raise ValueError(
+                "❌ In production mode, DATABASE_URL must be set in the environment."
+            )
 
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = True
 
-    
+
 setting = Settings()

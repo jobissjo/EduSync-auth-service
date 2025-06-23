@@ -5,7 +5,13 @@ from app.models import User, TempUserOTP
 from sqlalchemy.future import select
 from app.schemas.common_schema import RefreshTokenBody
 from app.utils.common import CustomException, generate_otp
-from app.core.security import create_access_token, create_refresh_token, hash_password, verify_password, verify_refresh_token
+from app.core.security import (
+    create_access_token,
+    create_refresh_token,
+    hash_password,
+    verify_password,
+    verify_refresh_token,
+)
 
 # render_email_template, send_email
 from app.services.email_service import EmailService
@@ -13,11 +19,8 @@ from app.repositories import UserRepository
 
 
 class UserService:
-
-
     @staticmethod
     async def register_user(user_data: user_schema.RegisterSchema, db: AsyncSession):
-        
         otp = await TempUserOTPService.get_user_otp(user_data.email, db)
         if otp.otp != user_data.otp:
             raise CustomException("Invalid OTP", 400)
@@ -55,8 +58,12 @@ class UserService:
         correct_pwd = await verify_password(user_data.password, existing_user.password)
         if not correct_pwd:
             raise CustomException("Invalid credentials.", 401)
-        access_token = await create_access_token({"user_id": existing_user.id, "role": existing_user.role})
-        refresh_token = await create_refresh_token({"user_id": existing_user.id, "role": existing_user.role})
+        access_token = await create_access_token(
+            {"user_id": existing_user.id, "role": existing_user.role}
+        )
+        refresh_token = await create_refresh_token(
+            {"user_id": existing_user.id, "role": existing_user.role}
+        )
         return {
             "access_token": access_token,
             "refresh_token": refresh_token,
@@ -70,7 +77,7 @@ class UserService:
             user = await UserRepository.get_user_by_email(data.email, db)
             if user and user.is_active:
                 raise CustomException(message="Email already exists", status_code=400)
-        
+
             user_otp = await UserRepository.create_user_otp(data.email, db)
             await EmailService.send_email(
                 data.email,
@@ -84,7 +91,7 @@ class UserService:
             raise e
         except Exception as e:
             raise CustomException(message=str(e), status_code=400)
-        
+
     @staticmethod
     async def verify_email_otp(
         data: user_schema.EmailVerifyOtpSchema, db: AsyncSession
@@ -95,8 +102,7 @@ class UserService:
         user_otp = await TempUserOTPService.get_user_otp(data.email, db)
         if user_otp.otp != data.otp:
             raise CustomException(message="Invalid OTP", status_code=400)
-        
-    
+
     @staticmethod
     async def refresh_to_access_token(token_data: RefreshTokenBody, db: AsyncSession):
         payload = await verify_refresh_token(token_data.refresh_token)
@@ -118,10 +124,6 @@ class UserService:
             "token_type": "Bearer",
             "role": user.role,
         }
-        
-        
-        
-
 
 
 class TempUserOTPService:

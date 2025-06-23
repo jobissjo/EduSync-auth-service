@@ -28,16 +28,22 @@ class EmailSettingLogRepository:
         query = select(EmailLog)
         result = await db.execute(query)
         return result.scalars().all()
-    
+
     @staticmethod
-    async def get_failed_email_sending_log_by_id(log_id: int, db: AsyncSession) -> EmailLog:
+    async def get_failed_email_sending_log_by_id(
+        log_id: int, db: AsyncSession
+    ) -> EmailLog:
         query = select(EmailLog).where(EmailLog.id == log_id)
         result = await db.execute(query)
         return result.scalar_one_or_none()
-    
+
     @staticmethod
-    async def delete_failed_email_sending_log_by_id(log_id: int, db: AsyncSession) -> bool:
-        email_log = await EmailSettingLogRepository.get_failed_email_sending_log_by_id(log_id, db)
+    async def delete_failed_email_sending_log_by_id(
+        log_id: int, db: AsyncSession
+    ) -> bool:
+        email_log = await EmailSettingLogRepository.get_failed_email_sending_log_by_id(
+            log_id, db
+        )
         if email_log is None:
             return False
         await db.delete(email_log)

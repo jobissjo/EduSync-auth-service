@@ -43,11 +43,14 @@ class User(Base):
         "EmailSetting", back_populates="user", cascade="all, delete-orphan"
     )
     # Emails sent by this user (e.g., admin)
-    sent_email_logs: Mapped[list["EmailLog"]] = relationship("EmailLog", back_populates="send_by", foreign_keys="[EmailLog.send_by_id]")
+    sent_email_logs: Mapped[list["EmailLog"]] = relationship(
+        "EmailLog", back_populates="send_by", foreign_keys="[EmailLog.send_by_id]"
+    )
 
     # Emails sent to this user
-    email_logs: Mapped[list["EmailLog"]] = relationship("EmailLog", back_populates="user", foreign_keys="[EmailLog.user_id]")
-
+    email_logs: Mapped[list["EmailLog"]] = relationship(
+        "EmailLog", back_populates="user", foreign_keys="[EmailLog.user_id]"
+    )
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, email={repr(self.email)})>"
@@ -75,8 +78,10 @@ class EmailSetting(Base):
     email_type: Mapped[EmailType] = mapped_column(
         Enum(EmailType), default=EmailType.SMTP, nullable=False
     )
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete='CASCADE',
-                            name='fk_email_setting_user_id'), nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE", name="fk_email_setting_user_id"),
+        nullable=False,
+    )
     password: Mapped[str] = mapped_column(String, nullable=False)
     host: Mapped[str] = mapped_column(String, nullable=False)
     port: Mapped[int] = mapped_column(Integer, nullable=False)

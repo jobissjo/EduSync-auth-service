@@ -5,7 +5,7 @@ from app.schemas.user_schema import (
     EmailVerifyOtpSchema,
     RegisterSchema,
     LoginEmailSchema,
-    EmailVerifySchema
+    EmailVerifySchema,
 )
 from fastapi.security import OAuth2PasswordRequestForm
 from app.services import UserService
@@ -17,14 +17,13 @@ from typing import Annotated
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
-@router.post('/verify-email')
+@router.post("/verify-email")
 async def verify_email(
     data: EmailVerifySchema, db: Annotated[AsyncSession, Depends(get_db)]
 ) -> BaseResponse[None]:
     await UserService.verify_email(data, db)
-    return BaseResponse(
-        status="success", message="OTP sent successfully", data=None
-    )
+    return BaseResponse(status="success", message="OTP sent successfully", data=None)
+
 
 @router.post("/verify-email-otp")
 async def verify_email_otp(
@@ -68,6 +67,7 @@ async def token(
     )
     return TokenResponse(**token_data)
 
+
 @router.post("/refresh")
 async def refresh(
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -75,4 +75,3 @@ async def refresh(
 ) -> TokenResponse:
     token_data = await UserService.refresh_to_access_token(data, db)
     return TokenResponse(**token_data)
-    

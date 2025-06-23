@@ -10,12 +10,9 @@ async def custom_exception_handler(request: Request, exc: CustomException):
     logger.error(f"{request.method} {request.url} - {exc.message}")
     return JSONResponse(
         status_code=exc.status_code,
-        content={
-            "message": exc.message,
-            "data": exc.data,
-            "status": "failed"
-        },
+        content={"message": exc.message, "data": exc.data, "status": "failed"},
     )
+
 
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     logger.error(f"{request.method} {request.url} - {exc.detail}")
