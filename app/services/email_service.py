@@ -6,6 +6,7 @@ from app.models import User, EmailSetting
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.logger_config import logger
+from app.schemas import EmailLogSchema
 from app.utils import render_email_template
 from app.services.email_setting_log import EmailSettingLogService
 
@@ -43,9 +44,11 @@ class EmailService:
         email_setting = await EmailService.get_email_setting(db, user, use_admin_email)
         email_body = await render_email_template(template_name, template_data)
         is_store_failed_email_sending = await EmailSettingLogService.is_store_failed_email_sending(template_name, db)
+        ERROR_MESSAGE = "Failed to send email"
         if not email_setting:
             user = user.first_name if user else "admin"
             is_failed_email = True
+            ERROR_MESSAGE = 'No email setting found for user'
             logger.error(f"Email setting not found for user")
             
         if not is_failed_email:
@@ -76,6 +79,12 @@ class EmailService:
             except Exception as e:
                 logger.error(f"Failed to send email: {e}")
                 is_failed_email = True
+                ERROR_MESSAGE = f"Failed to send email: {e}"
 
         if is_store_failed_email_sending and is_failed_email:
-            await EmailSettingLogService.save_failed_email_sending_log(template_name, db)
+            user_id = email_setting.user_id if email_setting else user.id
+            log_data = EmailLogSchema(to_email=recipient, template_name=template_name, status="failed", payload=template_data, send_by_id=user_id, user_id=user_id, error_message=ERROR_MESSAGE)
+            await EmailSettingLogService.save_failed_email_sending_log(log_data, db)
+
+    
+    

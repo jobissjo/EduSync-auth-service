@@ -14,6 +14,7 @@ class EmailLog(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     to_email: Mapped[str] = mapped_column(String)
     template_name: Mapped[str] = mapped_column(String)
+    subject: Mapped[str| None] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(String)  # "success" or "failed"
     payload: Mapped[dict] = mapped_column(JSON)
     send_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)

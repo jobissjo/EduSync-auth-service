@@ -5,13 +5,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.db_config import get_db
 from typing import Annotated
 from app.core.settings import setting
-from app.services import EmailService
+from app.services import EmailService, EmailSettingLogService
 from app.repositories import UserRepository
 
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(prefix="/email", tags=["Auth"])
 
 
+router.post("/send")
 async def send_internal_email(
     payload: EmailRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -32,3 +33,8 @@ async def send_internal_email(
         payload.is_admin_email,
         db,
     )
+
+
+@router.post("/resend/{id}")
+async def resend_email(id:int):
+    await EmailSettingLogService
