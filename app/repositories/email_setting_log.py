@@ -11,7 +11,8 @@ class EmailSettingLogRepository:
             EmailTemplateSetting.name == template_name,
             EmailTemplateSetting.can_resend.is_(True),
         )
-        result = await db.execute(query).scalar_one_or_none()
+        result = await db.execute(query)
+        result = result.scalar_one_or_none()
         return result is not None
 
     @staticmethod

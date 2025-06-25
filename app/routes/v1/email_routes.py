@@ -25,7 +25,7 @@ async def send_internal_email(
     if not payload.is_admin_email or payload.email_setting_user_id:
         user = await UserRepository.get_user_by_id(payload.user_id, db)
 
-    EmailService.send_email(
+    await EmailService.send_email(
         payload.to,
         payload.subject,
         payload.template_name,

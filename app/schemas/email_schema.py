@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class EmailRequest(BaseModel):
     to: str
     subject: str
-    body: str
+    body: dict
     is_admin_email: bool
     email_setting_user_id: int
     template_name: str
