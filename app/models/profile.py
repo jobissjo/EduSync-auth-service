@@ -2,6 +2,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db_config import Base
 from sqlalchemy import Integer, String, ForeignKey
 from typing import TYPE_CHECKING
+import uuid
+from sqlalchemy.dialects.postgresql import UUID
 
 if TYPE_CHECKING:
     from app.models.user import User
@@ -9,13 +11,17 @@ if TYPE_CHECKING:
 
 class Profile(Base):
     __tablename__ = "profiles"
-    __table_args__ = {"sqlite_autoincrement": True}
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
+    )
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE", name="fk_profile_user_id_relation"),
         unique=True,
         nullable=False,
     )
+
     bio: Mapped[str] = mapped_column(String(500), nullable=True)
     profile_picture_url: Mapped[str] = mapped_column(String(255), nullable=True)
 

@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     EMAIL_SERVICE_TOKEN: Optional[str] = None
 
     def model_post_init(self, __context) -> None:
-        if self.ENV == "development":
+        if self.ENV == "development" and not self.DATABASE_URL:
             object.__setattr__(
                 self, "DATABASE_URL", f"sqlite+aiosqlite:///{self.SQLITE_PATH}"
             )
