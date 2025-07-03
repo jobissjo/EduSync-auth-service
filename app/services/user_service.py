@@ -124,6 +124,13 @@ class UserService:
             "token_type": "Bearer",
             "role": user.role,
         }
+    
+    @staticmethod
+    async def get_user_by_id(user_id: int, db: AsyncSession):
+        user = await UserRepository.get_user_by_id(user_id, db)
+        if user is None:
+            raise CustomException(message="User not found", status_code=400)
+        return user
 
 
 class TempUserOTPService:

@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     EMAIL_HOST_PORT: Optional[int] = None
     EMAIL_HOST_USERNAME: Optional[str] = None
     EMAIL_HOST_PASSWORD: Optional[str] = None
-    EMAIL_SERVICE_TOKEN: Optional[str] = None
+    AUTH_SERVICE_TOKEN: Optional[str] = None
 
     def model_post_init(self, __context) -> None:
         if self.ENV == "development" and not self.DATABASE_URL:

@@ -19,7 +19,7 @@ async def send_internal_email(
     db: Annotated[AsyncSession, Depends(get_db)],
     x_service_token: str = Header(...),
 ):
-    if x_service_token != setting.EMAIL_SERVICE_TOKEN:
+    if x_service_token != setting.AUTH_SERVICE_TOKEN:
         raise HTTPException(status_code=403, detail="Unauthorized")
     user = None
     if not payload.is_admin_email or payload.email_setting_user_id:
