@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.models.enums import UserRole
 from typing import Optional
@@ -15,7 +15,7 @@ class RegisterSchema(BaseModel):
     first_name: str
     last_name: str
     otp: str
-    role: UserRole = Field(default=UserRole.STUDENT)
+    role: UserRole
 
 
 class VerifyUserSchema(BaseModel):

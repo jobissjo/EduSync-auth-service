@@ -13,30 +13,29 @@ async def admin_only(user: User = Depends(verify_token_get_user)):
     return user
 
 
-async def student_only(user: User = Depends(verify_token_get_user)):
-    if user.role != UserRole.STUDENT:
+async def user_only(user: User = Depends(verify_token_get_user)):
+    if user.role != UserRole.USER:
         raise CustomException(status_code=403, message=YOU_DO_NOT_HAVE_ACCESS)
     return user
 
 
-async def instructor_only(user: User = Depends(verify_token_get_user)):
-    if user.role != UserRole.INSTRUCTOR:
+async def guest_only(user: User = Depends(verify_token_get_user)):
+    if user.role != UserRole.GUEST:
         raise CustomException(status_code=403, message=YOU_DO_NOT_HAVE_ACCESS)
     return user
 
-
-async def moderator_only(user: User = Depends(verify_token_get_user)):
-    if user.role != UserRole.MODERATOR:
+async def guest_user_only(user: User = Depends(verify_token_get_user)):
+    if user.role != UserRole.GUEST and user.role != UserRole.USER:
         raise CustomException(status_code=403, message=YOU_DO_NOT_HAVE_ACCESS)
     return user
+
 
 
 async def any_user_role(user: User = Depends(verify_token_get_user)):
     if user.role not in {
         UserRole.ADMIN,
-        UserRole.STUDENT,
-        UserRole.INSTRUCTOR,
-        UserRole.MODERATOR,
+        UserRole.USER,
+        UserRole.GUEST
     }:
         raise CustomException(status_code=403, message=YOU_DO_NOT_HAVE_ACCESS)
     return user

@@ -8,7 +8,7 @@ from app.core.settings import setting
 from app.services import UserService
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.db_config import get_db
-import uuid
+from uuid import UUID
 
 router = APIRouter(prefix="/user", tags=["User"])
 
@@ -28,7 +28,7 @@ async def get_user(
 
 @router.get("/{id}")
 async def get_user_by_id(
-    id: uuid, 
+    id: UUID, 
     db: Annotated[AsyncSession, Depends(get_db)],
     x_service_token: str = Header(...),
     

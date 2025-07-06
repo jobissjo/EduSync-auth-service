@@ -31,11 +31,16 @@ class UserService:
             raise CustomException(
                 "A user with this username or email already exists.", 400
             )
+        print(user_data.role, "user_data.role")
         user_data = user_data.model_dump().copy()
         user_data.pop("otp")
+        print(user_data, "user_data")
         hashed_password = await hash_password(user_data["password"])
         if not existing_user:
             user_data["password"] = hashed_password
+            user_data["role"] = user_data["role"].lower()  # Convert to lowercase
+            print(user_data, "user_data")
+
             user = User(**user_data)
             db.add(user)
             await db.commit()
@@ -59,10 +64,17 @@ class UserService:
         if not correct_pwd:
             raise CustomException("Invalid credentials.", 401)
         access_token = await create_access_token(
-            {"user_id": existing_user.id, "role": existing_user.role}
+            {
+                "user_id": str(existing_user.id),
+                "role": existing_user.role,
+                "email": existing_user.email,
+                "first_name": existing_user.first_name,
+                "last_name": existing_user.last_name,
+                "is_superuser": existing_user.is_superuser,
+            }
         )
         refresh_token = await create_refresh_token(
-            {"user_id": existing_user.id, "role": existing_user.role}
+            {"user_id": str(existing_user.id), "role": existing_user.role}
         )
         return {
             "access_token": access_token,
@@ -116,7 +128,16 @@ class UserService:
         if not user.is_active:
             raise CustomException("User is not active", 401)
         # create access token
-        access_token = await create_access_token({"user_id": user.id})
+        access_token = await create_access_token(
+            {
+                "user_id": str(user.id),
+                "role": user.role,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "is_superuser": user.is_superuser,
+            }
+        )
         refresh_token = await create_refresh_token({"user_id": user.id})
         return {
             "access_token": access_token,
@@ -124,7 +145,7 @@ class UserService:
             "token_type": "Bearer",
             "role": user.role,
         }
-    
+
     @staticmethod
     async def get_user_by_id(user_id: int, db: AsyncSession):
         user = await UserRepository.get_user_by_id(user_id, db)

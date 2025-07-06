@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Boolean, DateTime, func, Enum
+from sqlalchemy import Integer, String, Boolean, DateTime, func, Enum  as SqlEnum
 from app.core.db_config import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
@@ -30,7 +30,7 @@ class User(Base):
     last_name: Mapped[str] = mapped_column(String, nullable=False)
 
     role: Mapped[UserRole] = mapped_column(
-        Enum(UserRole), default=UserRole.STUDENT, nullable=False
+        SqlEnum(UserRole, name="userrole", create_constraint=True), default=UserRole.USER, nullable=False
     )
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
 
@@ -76,7 +76,7 @@ class EmailSetting(Base):
     )
     email: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
     email_type: Mapped[EmailType] = mapped_column(
-        Enum(EmailType), default=EmailType.SMTP, nullable=False
+        SqlEnum(EmailType), default=EmailType.SMTP, nullable=False
     )
     user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE", name="fk_email_setting_user_id"),

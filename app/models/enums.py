@@ -3,9 +3,8 @@ import enum
 
 class UserRole(str, enum.Enum):
     ADMIN = "admin"
-    STUDENT = "student"
-    INSTRUCTOR = "instructor"
-    MODERATOR = "moderator"
+    USER = "user"
+    GUEST="guest"
 
 
 class EmailType(str, enum.Enum):
