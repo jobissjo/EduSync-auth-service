@@ -1,4 +1,3 @@
-from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import EmailSetting
 from sqlalchemy.future import select

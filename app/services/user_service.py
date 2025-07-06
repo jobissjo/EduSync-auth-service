@@ -2,9 +2,8 @@ from datetime import datetime, timedelta, timezone
 from app.schemas import user_schema
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import User, TempUserOTP
-from sqlalchemy.future import select
 from app.schemas.common_schema import RefreshTokenBody
-from app.utils.common import CustomException, generate_otp
+from app.utils.common import CustomException
 from app.core.security import (
     create_access_token,
     create_refresh_token,

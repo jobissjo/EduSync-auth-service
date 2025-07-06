@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel
 
 from app.models.enums import UserRole
 from typing import Optional

@@ -6,7 +6,7 @@ from app.core.logger_config import logger
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
-async def custom_exception_handler(request: Request, exc: CustomException):
+def custom_exception_handler(request: Request, exc: CustomException):
     logger.error(f"{request.method} {request.url} - {exc.message}")
     return JSONResponse(
         status_code=exc.status_code,
@@ -14,6 +14,6 @@ async def custom_exception_handler(request: Request, exc: CustomException):
     )
 
 
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+def http_exception_handler(request: Request, exc: StarletteHTTPException):
     logger.error(f"{request.method} {request.url} - {exc.detail}")
     return JSONResponse(status_code=exc.status_code, content={"message": exc.detail})
